@@ -1,6 +1,6 @@
 const path = require("path");
 const express = require("express");
-
+const { sendTransSuccess, sendTransFail } = require("../emails/accounts")
 const https = require("https");
 const qs = require("querystring");
 require('dotenv').config()
@@ -38,7 +38,8 @@ if(!paymentDetails.amount || !paymentDetails.customerId || !paymentDetails.custo
     params['ORDER_ID'] = 'TEST_'  + new Date().getTime();
     params['CUST_ID'] = paymentDetails.customerId;
     params['TXN_AMOUNT'] = paymentDetails.amount;
-    params['CALLBACK_URL'] = 'https://alex-payment-gateway.herokuapp.com/callback' || 'http://localhost:4000/callback';
+    params['CALLBACK_URL'] = 'https://alex-payment-gateway.herokuapp.com/callback'; 
+    //'http://localhost:4000/callback';
     params['EMAIL'] = paymentDetails.customerEmail;
     params['MOBILE_NO'] = paymentDetails.customerPhone;
 
@@ -115,9 +116,17 @@ app.post("/callback", (req, res) => {
 
            var _result = JSON.parse(response);
              if(_result.STATUS == 'TXN_SUCCESS') {
+
+                sendTransSuccess(_result.ORDERID, _result.TXNAMOUNT, _result.CURRENCY, _result.PAYMENTMODE, _result.TXNDATE, _result.BANKNAME)
+              
                  res.send('<h1>Payment Successful</h1> <a href="./index.html">Back to Home...</a>')
+                 
              }else {
+
+                sendTransFail(_result.ORDERID, _result.TXNAMOUNT, _result.CURRENCY, _result.PAYMENTMODE, _result.TXNDATE, _result.BANKNAME)
+
                  res.send('<h1>Payment Failed</h1> <a href="./details.html">Retry...</a>')
+                 
              }
            });
        });
