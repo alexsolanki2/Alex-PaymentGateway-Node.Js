@@ -5,11 +5,11 @@ const https = require("https");
 const qs = require("querystring");
 require('dotenv').config()
 
-const checksum_lib = require("../Paytm/checksum");
+const checksum_lib = require("../Paytm/checksum")
 const config = require("../Paytm/config");
 
 const app = express();
-const publicDirectoryPath = path.join(__dirname, './public')
+const publicDirectoryPath = path.join(__dirname, "../public")
 
 app.use(express.static(publicDirectoryPath))
 
