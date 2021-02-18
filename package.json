@@ -1,13 +1,22 @@
 {
-  "name": "alexpaytm",
+  "name": "AlexPaymentGateway",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexsolanki2/Alex-PaymentGateway-Node.Js.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexsolanki2/Alex-PaymentGateway-Node.Js/issues"
+  },
+  "homepage": "https://github.com/alexsolanki2/Alex-PaymentGateway-Node.Js#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
