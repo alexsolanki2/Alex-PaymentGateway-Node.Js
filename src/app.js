@@ -17,6 +17,7 @@ const parseUrl = express.urlencoded({ extended: false });
 const parseJson = express.json({ extended: false });
 
 const PORT = process.env.PORT || 4000;
+var emailTo;
 
 app.post("/paynow", [parseUrl, parseJson], (req, res) => {
   // Route for making payment
@@ -26,7 +27,10 @@ app.post("/paynow", [parseUrl, parseJson], (req, res) => {
     customerId: req.body.name,
     customerEmail: req.body.email,
     customerPhone: req.body.phone
-}
+  }
+
+  emailTo = paymentDetails.customerEmail // send email to customer using sendgrid
+
 if(!paymentDetails.amount || !paymentDetails.customerId || !paymentDetails.customerEmail || !paymentDetails.customerPhone) {
     res.status(400).send('Payment failed')
 } else {
@@ -38,8 +42,7 @@ if(!paymentDetails.amount || !paymentDetails.customerId || !paymentDetails.custo
     params['ORDER_ID'] = 'TEST_'  + new Date().getTime();
     params['CUST_ID'] = paymentDetails.customerId;
     params['TXN_AMOUNT'] = paymentDetails.amount;
-    params['CALLBACK_URL'] = 'https://alex-payment-gateway.herokuapp.com/callback'; 
-    //'http://localhost:4000/callback';
+    params['CALLBACK_URL'] = 'http://localhost:4000/callback';//'https://alex-payment-gateway.herokuapp.com/callback';
     params['EMAIL'] = paymentDetails.customerEmail;
     params['MOBILE_NO'] = paymentDetails.customerPhone;
 
@@ -74,14 +77,14 @@ app.post("/callback", (req, res) => {
      var post_data = qs.parse(body);
 
      // received params in callback
-     console.log('Callback Response: ', post_data, "\n");
+     //console.log('Callback Response: ', post_data, "\n");
 
 
      // verify the checksum
      var checksumhash = post_data.CHECKSUMHASH;
      // delete post_data.CHECKSUMHASH;
      var result = checksum_lib.verifychecksum(post_data, config.PaytmConfig.key, checksumhash);
-     console.log("Checksum Result => ", result, "\n");
+     //console.log("Checksum Result => ", result, "\n");
 
 
      // Send Server-to-Server request to verify Order Status
@@ -112,18 +115,18 @@ app.post("/callback", (req, res) => {
          });
 
          post_res.on('end', function(){
-           console.log('S2S Response: ', response, "\n");
+           //console.log('S2S Response: ', response, "\n");
 
            var _result = JSON.parse(response);
              if(_result.STATUS == 'TXN_SUCCESS') {
 
-                sendTransSuccess(_result.ORDERID, _result.TXNAMOUNT, _result.CURRENCY, _result.PAYMENTMODE, _result.TXNDATE, _result.BANKNAME)
+                sendTransSuccess(emailTo, _result.ORDERID, _result.TXNAMOUNT, _result.PAYMENTMODE, _result.TXNDATE, _result.BANKNAME)
               
-                 res.send('<h1>Payment Successful</h1> <a href="./index.html">Back to Home...</a>')
+                 res.send('<h1>Payment Successful</h1> <h3>Invoice Sent To Your Email</h3> <a href="./index.html">Back to Home...</a>')
                  
              }else {
 
-                sendTransFail(_result.ORDERID, _result.TXNAMOUNT, _result.CURRENCY, _result.PAYMENTMODE, _result.TXNDATE, _result.BANKNAME)
+                sendTransFail(emailTo, _result.ORDERID, _result.TXNAMOUNT, _result.TXNDATE)
 
                  res.send('<h1>Payment Failed</h1> <a href="./details.html">Retry...</a>')
                  
@@ -139,5 +142,5 @@ app.post("/callback", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`App is listening on Port ${PORT}`);
+  //console.log(`App is listening on Port ${PORT}`);
 });

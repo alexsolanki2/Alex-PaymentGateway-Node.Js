@@ -6,29 +6,27 @@ const sendGridAPIKey = process.env.SENDGRID_API_KEY
 
 sgMail.setApiKey(sendGridAPIKey)
 
-const sendTransSuccess = (order, amt, mode, date, bank) => sgMail.send({
-    to: 'alexss.solanki1@gmail.com',
+const sendTransSuccess = (emailTo, order, amt, mode, date, bank) => sgMail.send({
+    to: emailTo,
     from: 'alexss.solanki1@gmail.com',
     subject: 'Invoice: Transaction Successful XD (Alex-Payment-Gateway)',
-    text: `    Your Order ID: ${order}
-     Amount You Paid: ${amt}
+    text: `     Your Order ID: ${order}
+     Amount You Paid: ${amt} ₹
      Mode Of Payment: ${mode}
      Date And Time Of Transaction ${date}
      Bank Name: ${bank}
      
      
-     Thank You`
+     !! Thank You For Your Donation !!`
 })
 
-const sendTransFail = (order, amt, mode, date, bank) => sgMail.send({
-    to: 'alexss.solanki1@gmail.com',
+const sendTransFail = (emailTo, order, amt, date) => sgMail.send({
+    to: emailTo,
     from: 'alexss.solanki1@gmail.com',
-    subject: 'Invoice: !! Transaction Failed !! (Alex-Payment-Gateway)',
-    text: `    Your Order ID: ${order}
-     Amount You Paid: ${amt}
-     Mode Of Payment: ${mode}
-     Date And Time Of Transaction ${date}
-     Bank Name: ${bank}`
+    subject: '!! Transaction Failed !! (Alex-Payment-Gateway)',
+    text: `     Your Order ID: ${order}
+     Amount You Tried To Pay: ${amt}
+     Date And Time Of Transaction ${date}`
 })
 
 module.exports = {
