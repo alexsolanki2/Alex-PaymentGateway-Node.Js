@@ -1,9 +1,10 @@
 const path = require("path");
 const express = require("express");
+
 const { sendTransSuccess, sendTransFail } = require("../emails/accounts")
+
 const https = require("https");
 const qs = require("querystring");
-require('dotenv').config()
 
 const checksum_lib = require("../Paytm/checksum")
 const config = require("../Paytm/config");
@@ -42,7 +43,7 @@ if(!paymentDetails.amount || !paymentDetails.customerId || !paymentDetails.custo
     params['ORDER_ID'] = 'TEST_'  + new Date().getTime();
     params['CUST_ID'] = paymentDetails.customerId;
     params['TXN_AMOUNT'] = paymentDetails.amount;
-    params['CALLBACK_URL'] = 'http://localhost:4000/callback';//'https://alex-payment-gateway.herokuapp.com/callback';
+    params['CALLBACK_URL'] = 'https://alex-payment-gateway.herokuapp.com/callback';//'http://localhost:4000/callback';
     params['EMAIL'] = paymentDetails.customerEmail;
     params['MOBILE_NO'] = paymentDetails.customerPhone;
 
